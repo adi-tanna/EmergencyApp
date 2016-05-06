@@ -3,8 +3,6 @@ package org.tanna.inhouse.EmergencyApp.Resources;
 
 import java.sql.SQLException;
 import java.util.List;
-
-import javax.jws.soap.SOAPBinding.Use;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -30,8 +28,8 @@ public class UserResource {
     EmergencyContactServices objEmergencyContactService = new EmergencyContactServices();
 
     @GET
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })  
+    @Consumes({MediaType.APPLICATION_JSON })
+    @Produces({MediaType.APPLICATION_JSON })  
     @Path("/login")
     public Response getLogin(@QueryParam("contactNo") String contactNo, @QueryParam("password") String password) throws SQLException, WebServiceException {
     	
@@ -41,72 +39,82 @@ public class UserResource {
     }
     
     @GET
-    @Produces(value={"application/json"})
+    @Produces({MediaType.APPLICATION_JSON })
     public List<User> getUsers() throws SQLException {
         return this.objUserService.getAllUsers();
     }
 
     @POST
-    @Produces(value={"application/json"})
-    @Consumes(value={"application/json"})
+    @Produces({MediaType.APPLICATION_JSON })
+    @Consumes({MediaType.APPLICATION_JSON })
     public Response addUser(User user) throws SQLException,WebServiceException {
         return this.objUserService.addUser(user);
     }
 
     @GET
-    @Produces(value={"application/json"})
+    @Produces({MediaType.APPLICATION_JSON })
     @Path(value="/{userId}")
     public Response getUser(@PathParam(value="userId") long userId) throws SQLException,WebServiceException {
         return this.objUserService.getUser(userId);
     }
 
-    @PUT
-    @Produces(value={"application/json"})
-    @Consumes(value={"application/json"})
-    public User updateUser(User user) throws SQLException {
-        return this.objUserService.updateUser(user);
-    }
-
-    @DELETE
-    @Path(value="/{userId}")
-    public boolean deleteUser(@PathParam(value="userId") long userId) throws SQLException {
-        return this.objUserService.removeUser(userId);
-    }
+//    @PUT
+//    @Produces(value={"application/json"})
+//    @Consumes(value={"application/json"})
+//    public User updateUser(User user) throws SQLException {
+//        return this.objUserService.updateUser(user);
+//    }
+//
+//    @DELETE
+//    @Path(value="/{userId}")
+//    public boolean deleteUser(@PathParam(value="userId") long userId) throws SQLException {
+//        return this.objUserService.removeUser(userId);
+//    }
 
     @GET
-    @Produces(value={"application/json"})
+    @Produces({MediaType.APPLICATION_JSON })
     @Path(value="/{userId}/EmergencyContact")
-    public List<EmergencyContact> getEmergencyContacts(@PathParam(value="userId") long id) throws SQLException, WebServiceException {
+    public Response getEmergencyContacts(@PathParam(value="userId") long id) throws SQLException, WebServiceException {
         Response response =  this.objUserService.getUser(id);
     	
-    	User tempUser = (User) response.readEntity(User.class);
+    	User tempUser = (User)response.getEntity(); 
         
         return this.objEmergencyContactService.getEmergencyContacts(tempUser.getContactNo());
     }
 
     @GET
-    @Produces(value={"application/json"})
+    @Produces({MediaType.APPLICATION_JSON })
     @Path(value="/{userId}/asEmergencyContact")
-    public List<EmergencyContact> getAsEmergencyContact(@PathParam(value="userId") long id) throws SQLException, WebServiceException {
+    public Response getAsEmergencyContact(@PathParam(value="userId") long id) throws SQLException, WebServiceException {
        Response response = this.objUserService.getUser(id);
-        User tempUser = response.readEntity(User.class);
-        return this.objEmergencyContactService.getAsEmergencyContact(tempUser.getContactNo());
+       
+       User tempUser = (User)response.getEntity(); 
+       
+       return this.objEmergencyContactService.getAsEmergencyContact(tempUser.getContactNo());
     }
 
     @POST
     @Path(value="/{userId}/EmergencyContact")
-    @Consumes(value={"application/json"})
-    public String addEmergencyContact(@PathParam(value="userId") long id, List<EmergencyContact> list) throws SQLException, WebServiceException {
-    	 Response response = this.objUserService.getUser(id);
-         User tempUser = response.readEntity(User.class);
-        this.objEmergencyContactService.removeEmergencyContact(tempUser.getContactNo());
-        if (!list.isEmpty()) {
-            boolean isSuccessForAdd = this.objEmergencyContactService.addEmergencyContact(list);
-            if (isSuccessForAdd) {
-                return "Successful !!!";
+    @Consumes({MediaType.APPLICATION_JSON })
+    public Response addEmergencyContact(@PathParam(value="userId") long id, List<EmergencyContact> list) throws SQLException, WebServiceException {
+    	Response response = this.objUserService.getUser(id);
+    	
+    	User tempUser = (User)response.getEntity(); 
+    	
+    	boolean isSuccess = this.objEmergencyContactService.removeEmergencyContact(tempUser.getContactNo());
+        
+    	System.out.println(isSuccess);
+    	
+    	if(isSuccess){
+    		if (!list.isEmpty()) {
+                boolean isSuccessForAdd = this.objEmergencyContactService.addEmergencyContact(list);
+                if (!isSuccessForAdd) {
+                	throw new WebServiceException("Failure while adding emergency contacts !!!. Please try again later.");
+                }
             }
-            return "Failure while adding !!!";
-        }
-        return "Body Content not found !";
+    	}else{
+    		throw new WebServiceException("Something went wrong. Please try again later.");
+    	}
+    	return Response.ok().entity("Successful !!!").build();
     }
 }
