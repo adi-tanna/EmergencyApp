@@ -15,7 +15,6 @@ public class Database {
     public static ResultSet selectQuery(String strQuery) {
         ResultSet myRs;
         myRs = null;
-        try {
             try {
                 Connection conn = null;
                 Statement stmt = null;
@@ -29,8 +28,6 @@ public class Database {
             catch (Exception exception) {
                 System.out.println(exception);
             }
-        }
-        catch (Throwable v0) {}
         return myRs;
     }
 
@@ -71,7 +68,6 @@ public class Database {
     }
 
     public static boolean deleteQuery(String strQuery) {
-        try {
             try {
                 Connection conn = null;
                 Statement stmt = null;
@@ -81,12 +77,12 @@ public class Database {
                 System.out.println("Creating statement...");
                 stmt = conn.createStatement();
                 stmt.executeUpdate(strQuery);
+                return true;
             }
             catch (Exception exception) {
                 System.out.println(exception);
+                return false;
             }
-        }
-        catch (Throwable v0) {}
-        return false;
+       
     }
 }

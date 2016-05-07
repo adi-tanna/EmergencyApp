@@ -14,7 +14,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
+import org.tanna.inhouse.EmergencyApp.Exception.ErrorMessage;
 import org.tanna.inhouse.EmergencyApp.Exception.WebServiceException;
 import org.tanna.inhouse.EmergencyApp.Model.EmergencyContact;
 import org.tanna.inhouse.EmergencyApp.Model.User;
@@ -106,15 +108,19 @@ public class UserResource {
     	System.out.println(isSuccess);
     	
     	if(isSuccess){
-    		if (!list.isEmpty()) {
+    		if (list.size() > 0/*!list.isEmpty()*/) {
                 boolean isSuccessForAdd = this.objEmergencyContactService.addEmergencyContact(list);
                 if (!isSuccessForAdd) {
                 	throw new WebServiceException("Failure while adding emergency contacts !!!. Please try again later.");
                 }
+            }else{
+            	
             }
     	}else{
     		throw new WebServiceException("Something went wrong. Please try again later.");
     	}
-    	return Response.ok().entity("Successful !!!").build();
+    	
+    	return Response.status(Status.OK).entity(new ErrorMessage("Successfull !!!")).type(MediaType.APPLICATION_JSON).build(); 
+         
     }
 }

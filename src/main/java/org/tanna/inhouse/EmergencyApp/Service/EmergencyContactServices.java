@@ -20,8 +20,10 @@ public class EmergencyContactServices {
         	String strSelect = "select * from tbl_emergency_numbers where contact_no = " + id;
             ResultSet rs = Database.selectQuery((String)strSelect);
             while (rs.next()) {
-                EmergencyContact tempEmerCont = new EmergencyContact(rs.getLong("id"), rs.getLong("contact_no"), rs.getLong("emergency_number"), rs.getBoolean("is_accepted"));
-                listEmergencyContacts.add(tempEmerCont);
+            	           	
+            	EmergencyContact tempEmerCont = new EmergencyContact(rs.getLong("contact_no"),rs.getString("contact_name"), rs.getLong("emergency_number"), rs.getString("emergency_name"), rs.getString("emergency_type"), rs.getBoolean("is_accepted"));
+               
+            	listEmergencyContacts.add(tempEmerCont);
             }
             
             if (listEmergencyContacts.size() == 0) {
@@ -34,34 +36,6 @@ public class EmergencyContactServices {
         GenericEntity<List<EmergencyContact>> list = new GenericEntity<List<EmergencyContact>>(listEmergencyContacts){};
         return Response.ok().entity(list).build();    
         
-//        String strSelect = "select * from tbl_emergency_numbers where contact_no = " + id;
-//        ResultSet rs = Database.selectQuery((String)strSelect);
-//        while (rs.next()) {
-//            EmergencyContact tempEmerCont = new EmergencyContact(rs.getLong("id"), rs.getLong("contact_no"), rs.getLong("emergency_number"), rs.getBoolean("is_accepted"));
-//            listEmergencyContacts.add(tempEmerCont);
-//        }
-//        return listEmergencyContacts;
-        
-        
-        /*
-         User user = null;
-		
-		try {
-			 String strQuery = "select * from tbl_users where contact_no = '" + userAccount.getContactNo() + "' and password = '"+userAccount.getPassword()+"'";
-		        ResultSet rs = Database.selectQuery((String)strQuery);
-		        while (rs.next()) {
-		            user = new User(rs.getLong("id"), rs.getString("fname"), rs.getLong("contact_no"), rs.getString("lname"), rs.getString("password"));
-		        }
-		        
-		        if(user == null) {
-		           //return Response.serverError().entity("No Such User found").build();
-		           throw new WebServiceException("No such user Found");
-		        }
-		} catch (SQLException e) {
-			 throw new WebServiceException("No such user Found");
-		}
-       return Response.ok().entity(user).build();
-         */
     }
 
     public Response getAsEmergencyContact(long id) throws SQLException, WebServiceException {
@@ -72,10 +46,10 @@ public class EmergencyContactServices {
         	 
         	ResultSet rs = Database.selectQuery((String)strSelect);
             
-        	while (rs.next()) {
-            	EmergencyContact tempEmerCont = new EmergencyContact(rs.getLong("id"), rs.getLong("contact_no"), rs.getLong("emergency_number"), rs.getBoolean("is_accepted"));
+        	while (rs.next()) {           
+                EmergencyContact tempEmerCont = new EmergencyContact(rs.getLong("contact_no"),rs.getString("contact_name"), rs.getLong("emergency_number"), rs.getString("emergency_name"), rs.getString("emergency_type"), rs.getBoolean("is_accepted"));
                 
-                listEmergencyContacts.add(tempEmerCont);
+            	listEmergencyContacts.add(tempEmerCont);
             }
             
             if (listEmergencyContacts.size() == 0) {
@@ -93,10 +67,14 @@ public class EmergencyContactServices {
     
     public boolean addEmergencyContact(List<EmergencyContact> list) {
         for (EmergencyContact emergencyContact : list) {
-            String str1 = String.valueOf(emergencyContact.getUserContactNo());
-            String str2 = String.valueOf(emergencyContact.getEmergencyContactNo());
+            String strUserContactNo = String.valueOf(emergencyContact.getUserContactNo());
+            String strUserName = String.valueOf(emergencyContact.getUserName());
+            String strEmergencyContactNo = String.valueOf(emergencyContact.getEmergencyContactNo());
+            String strEmergencyName = emergencyContact.getEmergencyContactName();
+            String strEmergencyType = emergencyContact.getEmergencyContactType();
             boolean isaccepted = emergencyContact.isAccepted();
-            String strInsertQuery = "insert into tbl_emergency_numbers (contact_no,emergency_number,is_accepted) values(" + str1 + "," + str2 + "," + isaccepted + ")";
+            String strInsertQuery = "insert into tbl_emergency_numbers (contact_no,contact_name,emergency_number,is_accepted,emergency_name,emergency_type) values(" + strUserContactNo + ",'"+strUserName+"'," + strEmergencyContactNo + "," + isaccepted +",'"+ strEmergencyName+"','"+ strEmergencyType +"')";
+            System.out.println(strInsertQuery);
             if (Database.insertQuery((String)strInsertQuery)) continue;
             return false;
         }
@@ -109,17 +87,18 @@ public class EmergencyContactServices {
          	String strSelect = "select * from tbl_emergency_numbers where contact_no = " + number;
              ResultSet rs = Database.selectQuery((String)strSelect);
              while (rs.next()) {
-                 EmergencyContact tempEmerCont = new EmergencyContact(rs.getLong("id"), rs.getLong("contact_no"), rs.getLong("emergency_number"), rs.getBoolean("is_accepted"));
-                 listEmergencyContacts.add(tempEmerCont);
+             
+                 EmergencyContact tempEmerCont = new EmergencyContact(rs.getLong("contact_no"),rs.getString("contact_name"), rs.getLong("emergency_number"), rs.getString("emergency_name"), rs.getString("emergency_type"), rs.getBoolean("is_accepted"));
+                 
+             	listEmergencyContacts.add(tempEmerCont);
              }
              
              if (listEmergencyContacts.size() > 0) {
             	 String strDeleteQuery = "Delete from tbl_emergency_numbers where contact_no =" + number;
                  boolean isSuccess = Database.deleteQuery((String)strDeleteQuery);
-                 if (isSuccess) {
-                     return true;
+                 if (!isSuccess) {
+                     return false;
                  }
-                 return false;
  			}
  		} catch (SQLException e) {
  			throw new WebServiceException("Some thin went wrong. Please tra again later.");
