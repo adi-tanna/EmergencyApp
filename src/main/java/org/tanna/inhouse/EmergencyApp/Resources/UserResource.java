@@ -3,6 +3,7 @@ package org.tanna.inhouse.EmergencyApp.Resources;
 
 import java.sql.SQLException;
 import java.util.List;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -19,16 +20,23 @@ import javax.ws.rs.core.Response.Status;
 import org.tanna.inhouse.EmergencyApp.Exception.ErrorMessage;
 import org.tanna.inhouse.EmergencyApp.Exception.WebServiceException;
 import org.tanna.inhouse.EmergencyApp.Model.EmergencyContact;
+import org.tanna.inhouse.EmergencyApp.Model.EmergencyLocation;
+import org.tanna.inhouse.EmergencyApp.Model.GCM;
 import org.tanna.inhouse.EmergencyApp.Model.User;
 import org.tanna.inhouse.EmergencyApp.Model.UserAccount;
 import org.tanna.inhouse.EmergencyApp.Service.EmergencyContactServices;
+import org.tanna.inhouse.EmergencyApp.Service.EmergencyLocationServices;
+import org.tanna.inhouse.EmergencyApp.Service.GCMServices;
 import org.tanna.inhouse.EmergencyApp.Service.UserServices;
 
 @Path(value="/users")
 public class UserResource {
     UserServices objUserService = new UserServices();
     EmergencyContactServices objEmergencyContactService = new EmergencyContactServices();
-
+    GCMServices objGCMService = new GCMServices();
+    EmergencyLocationServices objEmergencyLocationService = new EmergencyLocationServices();
+    
+    
     @GET
     @Consumes({MediaType.APPLICATION_JSON })
     @Produces({MediaType.APPLICATION_JSON })  
@@ -123,4 +131,31 @@ public class UserResource {
     	return Response.status(Status.OK).entity(new ErrorMessage("Successfull !!!")).type(MediaType.APPLICATION_JSON).build(); 
          
     }
+    
+    @POST
+    @Path(value="/GcmRegister")
+    @Consumes({MediaType.APPLICATION_JSON })
+    @Produces({MediaType.APPLICATION_JSON })
+    public Response registerForGCM (GCM gcm) throws WebServiceException{    	
+    	return objGCMService.registerForGCM(gcm);
+    }
+    
+    @POST
+    @Path(value="/GcmUnRegister")
+    @Consumes({MediaType.APPLICATION_JSON })
+    @Produces({MediaType.APPLICATION_JSON })
+    public Response unRegisterForGCM (GCM gcm) throws WebServiceException{    	
+    	return objGCMService.unRegisterForGCM(gcm);
+    }
+    
+    
+    @POST
+    @Path(value="/DeclareEmergency")
+    @Consumes({MediaType.APPLICATION_JSON })
+    @Produces({MediaType.APPLICATION_JSON })
+    public Response declareEmergency(EmergencyLocation emergencyLocation) throws SQLException, WebServiceException{
+    	
+    	return objEmergencyLocationService.declareEmergency(emergencyLocation);    	
+    }
+    
 }
