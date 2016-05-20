@@ -30,11 +30,12 @@ public class EmergencyLocationServices {
 	
 public Response declareEmergency(EmergencyLocation emergencyLocation) throws SQLException, WebServiceException {
 		
+		/*// Uncomment this code to add location into database. 
 		boolean isSuccess = addEmergencyLocationIntoDb(emergencyLocation);
 		
 		if (!isSuccess) {
 			System.out.println("Fail to add Emergency Location into Database");
-		}
+		}*/
 		
 		  String apiKey = "AIzaSyBeJhqG9EaWHmx1hXm6b70a3L-rVWlrtkc";
 	      
