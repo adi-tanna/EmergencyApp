@@ -8,26 +8,26 @@ import java.util.Map;
 
 public class Content implements Serializable {
 	
-//	public List<String> getRegistration_ids() {
-//		return registration_ids;
-//	}
-//
-//	public void setRegistration_ids(List<String> registration_ids) {
-//		this.registration_ids = registration_ids;
-//	}
-
-	public Map<String, Object> getData() {
-		return data;
-	}
-
-	public String getRegistration_ids() {
+	public List<String> getRegistration_ids() {
 		return registration_ids;
 	}
 
-	public void setRegistration_ids(String registration_ids) {
+	public void setRegistration_ids(List<String> registration_ids) {
 		this.registration_ids = registration_ids;
 	}
 
+//	public String getRegistration_ids() {
+//		return registration_ids;
+//	}
+//
+//	public void setRegistration_ids(String registration_ids) {
+//		this.registration_ids = registration_ids;
+//	}
+	
+	public Map<String, Object> getData() {
+		return data;
+	}
+	
 	public void setData(Map<String, Object> data) {
 		this.data = data;
 	}
@@ -39,19 +39,19 @@ public class Content implements Serializable {
 	}
 
 	private static final long serialVersionUID = 3387516993124229948L;
-//	private List<String> registration_ids;
-	private String registration_ids;
+	private List<String> registration_ids;
+//	private String registration_ids;
     private Map<String,Object> data;
 
-//    public void addRegId(String regId){
-//        if(registration_ids == null)
-//            registration_ids = new LinkedList<String>();
-//        registration_ids.add(regId);
-//    }
-    
     public void addRegId(String regId){
-        setRegistration_ids(regId);
+        if(registration_ids == null)
+            registration_ids = new LinkedList<String>();
+        registration_ids.add(regId);
     }
+    
+//    public void addRegId(String regId){
+//        setRegistration_ids(regId);
+//    }
 
     public void createData(String title, String message, EmergencyLocation emergencyLocation){
         if(data == null)
@@ -60,9 +60,11 @@ public class Content implements Serializable {
         Map<String, Object> mapNotificaiton = new HashMap<String, Object>();
         mapNotificaiton.put("body",emergencyLocation.getUserName()+" is in Emergency. Location is shared in app.");
         mapNotificaiton.put("sound", "default");
-        mapNotificaiton.put("priority", "high");
+        //mapNotificaiton.put("priority", "high");
+        //data.put("to", registration_ids);
         
-        data.put("to", registration_ids);
+        data.put("registration_ids", registration_ids);
+        data.put("priority", "high");
         data.put("content_available", true);
         data.put("notification", mapNotificaiton);
         data.put("data", emergencyLocation);

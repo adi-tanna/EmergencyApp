@@ -44,17 +44,17 @@ public Response declareEmergency(EmergencyLocation emergencyLocation) throws SQL
 			  return Response.status(Status.OK).entity(new ErrorMessage("It seems User Doesn't have any Emergency Contact !!")).type(MediaType.APPLICATION_JSON).build();
 		  }
 		  
-		  for (String string : deviceIds) {
-			  Content content = createContentWithDeviceIdsAndData(string, emergencyLocation);
-
-			  post(apiKey, content);
-			  
-		  }
-		  
-		  return Response.status(Status.OK).entity(new ErrorMessage("Successfull !!!")).type(MediaType.APPLICATION_JSON).build(); 
-//		  Content content = createContentWithDeviceIdsAndData(deviceIds, emergencyLocation);
+//		  for (String string : deviceIds) {
+//			  Content content = createContentWithDeviceIdsAndData(string, emergencyLocation);
 //
-//		  return post(apiKey, content);
+//			  post(apiKey, content);
+//			  
+//		  }
+//		  
+//		  return Response.status(Status.OK).entity(new ErrorMessage("Successfull !!!")).type(MediaType.APPLICATION_JSON).build(); 
+		  Content content = createContentWithDeviceIdsAndData(deviceIds, emergencyLocation);
+
+		  return post(apiKey, content);
 	}
 	
 	public boolean addEmergencyLocationIntoDb(EmergencyLocation emergencyLocation) {
@@ -118,28 +118,28 @@ public Response declareEmergency(EmergencyLocation emergencyLocation) throws SQL
 		return emergencyUsers;
 	}	
 	
-	public static Content createContentWithDeviceIdsAndData(String deviceId,EmergencyLocation emergencyLocation){
-
-        Content c = new Content();
-        
-        c.addRegId(deviceId);
-		
-        c.createData("Test Title", "Test Message",emergencyLocation);
-
-        return c;
-    }
-//	public static Content createContentWithDeviceIdsAndData(ArrayList<String> deviceIds,EmergencyLocation emergencyLocation){
+//	public static Content createContentWithDeviceIdsAndData(String deviceId,EmergencyLocation emergencyLocation){
 //
 //        Content c = new Content();
 //        
-//        for (String deviceId : deviceIds) {
-//        	c.addRegId(deviceId);
-//		}
-//        
+//        c.addRegId(deviceId);
+//		
 //        c.createData("Test Title", "Test Message",emergencyLocation);
 //
 //        return c;
 //    }
+	public static Content createContentWithDeviceIdsAndData(ArrayList<String> deviceIds,EmergencyLocation emergencyLocation){
+
+        Content c = new Content();
+        
+        for (String deviceId : deviceIds) {
+        	c.addRegId(deviceId);
+		}
+        
+        c.createData("Test Title", "Test Message",emergencyLocation);
+
+        return c;
+    }
 	
 	
 	public static Response post(String apiKey, Content content) throws WebServiceException{
