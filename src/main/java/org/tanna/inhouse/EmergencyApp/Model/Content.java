@@ -60,6 +60,7 @@ public class Content implements Serializable {
         Map<String, Object> mapNotificaiton = new HashMap<String, Object>();
         mapNotificaiton.put("body",emergencyLocation.getUserName()+" is in Emergency. Location is shared in app.");
         mapNotificaiton.put("sound", "default");
+        mapNotificaiton.put("badge", 1);
         //mapNotificaiton.put("priority", "high");
         //data.put("to", registration_ids);
         
