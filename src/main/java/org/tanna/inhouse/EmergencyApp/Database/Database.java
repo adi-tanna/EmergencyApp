@@ -1,10 +1,9 @@
 package org.tanna.inhouse.EmergencyApp.Database;
 
-import java.io.PrintStream;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.SQLException;
 
 public class Database {
     static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
@@ -12,6 +11,7 @@ public class Database {
     static final String USER = "root";
     static final String PASS = "";
 
+    /*
     public static ResultSet selectQuery(String strQuery) {
         ResultSet myRs;
         myRs = null;
@@ -84,5 +84,14 @@ public class Database {
                 return false;
             }
        
+    }
+    */
+    
+    public static Connection getConnection() throws ClassNotFoundException, SQLException{
+    	  Connection conn = null;
+          Class.forName("com.mysql.jdbc.Driver");
+          System.out.println("Connecting to database...");
+          conn = DriverManager.getConnection("jdbc:mysql://localhost/emergency_app", "root", "");
+          return conn;
     }
 }
