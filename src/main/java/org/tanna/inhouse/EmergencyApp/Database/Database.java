@@ -91,7 +91,7 @@ public class Database {
     	  Connection conn = null;
           Class.forName("com.mysql.jdbc.Driver");
           System.out.println("Connecting to database...");
-          conn = DriverManager.getConnection("jdbc:mysql://localhost/emergency_app", "root", "");
+          conn = DriverManager.getConnection(DB_URL, USER, PASS);
           return conn;
     }
 }
