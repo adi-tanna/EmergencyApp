@@ -19,13 +19,14 @@ import com.mysql.jdbc.Statement;
 public class EmergencyContactServices {
     public Response getEmergencyContacts(long id) throws SQLException, WebServiceException, ClassNotFoundException {
         ArrayList<EmergencyContact> listEmergencyContacts = new ArrayList<EmergencyContact>();
-        try {
-        	Connection conn = Database.getConnection();
-			Statement stmt= null;
-			ResultSet rs = null;
+        
+        Connection conn = Database.getConnection();
+		Statement stmt= null;
+		ResultSet rs = null;
 
-			stmt = (Statement) conn.createStatement();
-        	
+		stmt = (Statement) conn.createStatement();
+        
+        try {
         	String strSelect = "select * from tbl_emergency_numbers where contact_no = " + id;
         	
         	rs = stmt.executeQuery(strSelect);
@@ -45,6 +46,9 @@ public class EmergencyContactServices {
 			}
             
 		} catch (SQLException e) {
+			
+			conn.close();
+			
 			throw new WebServiceException("Some thin went wrong. Please tra again later.");
 		}
         GenericEntity<List<EmergencyContact>> list = new GenericEntity<List<EmergencyContact>>(listEmergencyContacts){};
@@ -55,13 +59,13 @@ public class EmergencyContactServices {
     public Response getAsEmergencyContact(long id) throws SQLException, WebServiceException, ClassNotFoundException {
         ArrayList<EmergencyContact> listEmergencyContacts = new ArrayList<EmergencyContact>();
         
-        try {
-        	Connection conn = Database.getConnection();
-			Statement stmt= null;
-			ResultSet rs = null;
+        Connection conn = Database.getConnection();
+		Statement stmt= null;
+		ResultSet rs = null;
 
-			stmt = (Statement) conn.createStatement();
-        	
+		stmt = (Statement) conn.createStatement();
+        
+        try {
         	String strSelect = "select * from tbl_emergency_numbers where emergency_number = " + id;
         	
         	rs = stmt.executeQuery(strSelect);
@@ -81,6 +85,8 @@ public class EmergencyContactServices {
 			}
             
 		} catch (SQLException e) {
+			 conn.close();
+			
 			throw new WebServiceException("Some thin went wrong. Please tra again later.");
 		}
         
@@ -90,11 +96,12 @@ public class EmergencyContactServices {
 
     
     public boolean addEmergencyContact(List<EmergencyContact> list) throws SQLException, ClassNotFoundException, WebServiceException {
+    	Connection conn = Database.getConnection();
+		Statement stmt= null;
+		stmt = (Statement) conn.createStatement();
+    	
     	try {
-    		Connection conn = Database.getConnection();
-    		Statement stmt= null;
-    		stmt = (Statement) conn.createStatement();
-
+    	
     		for (EmergencyContact emergencyContact : list) {
     			String strUserContactNo = String.valueOf(emergencyContact.getUserContactNo());
     			String strUserName = String.valueOf(emergencyContact.getUserName());
@@ -113,19 +120,25 @@ public class EmergencyContactServices {
 
     		conn.close();
     	} catch (SQLException e) {
+    		conn.close();
+    		
  			throw new WebServiceException("Some thin went wrong. Please tra again later.");
  		}
         return true;
     }
 
-    public boolean removeEmergencyContact(long number) throws WebServiceException, ClassNotFoundException {
+    public boolean removeEmergencyContact(long number) throws WebServiceException, ClassNotFoundException, SQLException {
     	 ArrayList<EmergencyContact> listEmergencyContacts = new ArrayList<EmergencyContact>();
-         try {
-        	Connection conn = Database.getConnection();
- 			Statement stmt= null;
- 			ResultSet rs = null;
+         
+    	 Connection conn = Database.getConnection();
+			
+    	 Statement stmt= null;
+		
+    	 ResultSet rs = null;
 
- 			stmt = (Statement) conn.createStatement();
+    	 stmt = (Statement) conn.createStatement();
+    	 
+    	 try {
         	 
          	String strSelect = "select * from tbl_emergency_numbers where contact_no = " + number;
 

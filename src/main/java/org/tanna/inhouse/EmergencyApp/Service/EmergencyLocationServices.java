@@ -7,6 +7,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -25,10 +26,11 @@ import org.tanna.inhouse.EmergencyApp.Model.EmergencyLocation;
 import org.tanna.inhouse.EmergencyApp.Model.GCM;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mysql.jdbc.Statement;
 
 public class EmergencyLocationServices {
 	
-public Response declareEmergency(EmergencyLocation emergencyLocation) throws SQLException, WebServiceException {
+public Response declareEmergency(EmergencyLocation emergencyLocation) throws SQLException, WebServiceException, ClassNotFoundException {
 		
 		/*// Uncomment this code to add location into database. 
 		boolean isSuccess = addEmergencyLocationIntoDb(emergencyLocation);
@@ -58,22 +60,44 @@ public Response declareEmergency(EmergencyLocation emergencyLocation) throws SQL
 		  return post(apiKey, content);
 	}
 	
-	public boolean addEmergencyLocationIntoDb(EmergencyLocation emergencyLocation) {
+	public boolean addEmergencyLocationIntoDb(EmergencyLocation emergencyLocation) throws WebServiceException, SQLException, ClassNotFoundException {
 		
-		String strQueryInsert = "Insert into tbl_emergency_location (contact_no, userName, latitude, longitude)"
-				+ "values ("+emergencyLocation.getContactNo()+",'"+emergencyLocation.getUserName()
-				+"','"+emergencyLocation.getLatitude()+"','"+emergencyLocation.getLongitude()+"')";
-		
-		boolean isSuccess = Database.insertQuery(strQueryInsert);
-		
-		if(!isSuccess){
+		Connection conn = Database.getConnection();
+		Statement stmt= null;
+		stmt = (Statement) conn.createStatement();
+		try {
+			String strQueryInsert = "Insert into tbl_emergency_location (contact_no, userName, latitude, longitude)"
+					+ "values ("+emergencyLocation.getContactNo()+",'"+emergencyLocation.getUserName()
+					+"','"+emergencyLocation.getLatitude()+"','"+emergencyLocation.getLongitude()+"')";
+			
+			stmt.executeUpdate(strQueryInsert);
+			
+			conn.close();
+			
+			return true;
+			
+		} catch (SQLException e) {
 			return false;
 		}
 		
-		return true;
+//		String strQueryInsert = "Insert into tbl_emergency_location (contact_no, userName, latitude, longitude)"
+//				+ "values ("+emergencyLocation.getContactNo()+",'"+emergencyLocation.getUserName()
+//				+"','"+emergencyLocation.getLatitude()+"','"+emergencyLocation.getLongitude()+"')";
+//		
+//		boolean isSuccess = Database.insertQuery(strQueryInsert);
+		
+//		if(!isSuccess){
+//			return false;
+//		}
 	}
 	
-	public ArrayList<String> getEmergencyDeviceIdForUser(long contactNo) throws SQLException {
+	public ArrayList<String> getEmergencyDeviceIdForUser(long contactNo) throws SQLException, ClassNotFoundException {
+		
+		
+		Connection conn = Database.getConnection();
+		Statement stmt= null;
+		ResultSet rs = null;
+		stmt = (Statement) conn.createStatement();
 		
 		ArrayList<String> emergencyDeviceId = new ArrayList<String>();
 		
@@ -83,7 +107,10 @@ public Response declareEmergency(EmergencyLocation emergencyLocation) throws SQL
 			for (Long emergencyUserContactNo : emergencyUsers) {
 				try {
 					String strSelect = "select * from tbl_gcm_registration where contact_no = " + emergencyUserContactNo;
-		            ResultSet rs = Database.selectQuery((String)strSelect);
+		            
+					rs = stmt.executeQuery(strSelect);
+					
+					//ResultSet rs = Database.selectQuery((String)strSelect);
 		            while (rs.next()) {
 		            	           	
 		            	GCM GCMDetails = new GCM(rs.getString("registrationId"), rs.getLong("contact_no")); 
@@ -99,13 +126,19 @@ public Response declareEmergency(EmergencyLocation emergencyLocation) throws SQL
 		return emergencyDeviceId;
 	}
 	
-	public List<Long> getEmergencyUsersForUser(long contactNo) throws SQLException {
+	public List<Long> getEmergencyUsersForUser(long contactNo) throws SQLException, ClassNotFoundException {
+		
+		Connection conn = Database.getConnection();
+		Statement stmt= null;
+		ResultSet rs = null;
+		stmt = (Statement) conn.createStatement();
 		
 		List<Long> emergencyUsers = new ArrayList<Long>();
 
 		try {
 			String strSelect = "select * from tbl_emergency_numbers where contact_no = " + contactNo;
-			ResultSet rs = Database.selectQuery((String)strSelect);
+			rs = stmt.executeQuery(strSelect);
+			//ResultSet rs = Database.selectQuery((String)strSelect);
 			while (rs.next()) {
 
 				EmergencyContact tempEmerCont = new EmergencyContact(rs.getLong("contact_no"),rs.getString("contact_name"), rs.getLong("emergency_number"), rs.getString("emergency_name"), rs.getString("emergency_type"), rs.getBoolean("is_accepted"));

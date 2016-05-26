@@ -3,6 +3,7 @@ package org.tanna.inhouse.EmergencyApp.Resources;
 
 import java.sql.SQLException;
 import java.util.List;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -13,6 +14,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+
 import org.tanna.inhouse.EmergencyApp.Exception.ErrorMessage;
 import org.tanna.inhouse.EmergencyApp.Exception.WebServiceException;
 import org.tanna.inhouse.EmergencyApp.Model.EmergencyContact;
@@ -132,7 +134,7 @@ public class UserResource {
     @Path(value="/GcmRegister")
     @Consumes({MediaType.APPLICATION_JSON })
     @Produces({MediaType.APPLICATION_JSON })
-    public Response registerForGCM (GCM gcm) throws WebServiceException{    	
+    public Response registerForGCM (GCM gcm) throws WebServiceException, ClassNotFoundException, SQLException{    	
     	return objGCMService.registerForGCM(gcm);
     }
     
@@ -140,7 +142,7 @@ public class UserResource {
     @Path(value="/GcmUnRegister")
     @Consumes({MediaType.APPLICATION_JSON })
     @Produces({MediaType.APPLICATION_JSON })
-    public Response unRegisterForGCM (GCM gcm) throws WebServiceException{    	
+    public Response unRegisterForGCM (GCM gcm) throws WebServiceException, ClassNotFoundException, SQLException{    	
     	return objGCMService.unRegisterForGCM(gcm);
     }
     
@@ -149,7 +151,7 @@ public class UserResource {
     @Path(value="/DeclareEmergency")
     @Consumes({MediaType.APPLICATION_JSON })
     @Produces({MediaType.APPLICATION_JSON })
-    public Response declareEmergency(EmergencyLocation emergencyLocation) throws SQLException, WebServiceException{
+    public Response declareEmergency(EmergencyLocation emergencyLocation) throws SQLException, WebServiceException, ClassNotFoundException{
     	
     	return objEmergencyLocationService.declareEmergency(emergencyLocation);    	
     }

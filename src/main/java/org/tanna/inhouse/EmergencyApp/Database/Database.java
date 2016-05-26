@@ -7,9 +7,9 @@ import java.sql.SQLException;
 
 public class Database {
     static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-    static final String DB_URL = "jdbc:mysql://localhost/emergency_app";
-    static final String USER = "root";
-    static final String PASS = "";
+    static final String DB_URL = "jdbc:mysql://188.166.227.51:3306/emergency"; //jdbc:mysql://localhost/emergency_app";
+    static final String USER = "euser";
+    static final String PASS = "o#k3wAG3gS%T";
 
     /*
     public static ResultSet selectQuery(String strQuery) {
